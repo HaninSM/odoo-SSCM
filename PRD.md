@@ -3,8 +3,9 @@
 
 * **Project Name:** Odoo SSCM (Service Supply Chain Management)
 * **Author:** HaninSM & Odoo Expert Assistant
-* **Target Version:** Odoo Community / Enterprise (v16 / v17 / v18)
-* **Status:** Draft / Alignment Stage
+* **Target Version:** Odoo Enterprise (v20.0+e Live) & Community/Enterprise (v16–v18 Compatible)
+* **Status:** **Approved & Implemented** (Live SaaS + Standalone Addons)
+* **Live Instance:** `https://bengkelhanin1.odoo.com`
 * **Use Cases:**
   1. Bengkel & Carwash (Automotive Workshop & Detailing)
   2. Salon, Barbershop, & Klinik Kecantikan (Beauty & Wellness Clinic)
@@ -74,7 +75,7 @@ Sistem Odoo SSCM ini dirancang untuk:
 ### FR-5: Employee Commission & Incentive Engine (Sistem Komisi Karyawan)
 * **FR-5.1 (Struktur Komisi Fleksibel):**
   * **Komisi Jasa:** Persentase (%) atau nominal tetap (Rp) dari nilai pengerjaan jasa per mekanik/terapis (misal: 15% dari jasa pengerjaan).
-  * **Insentif Penjualan Produk (Retail Up-selling):** Bonus penjualan produk *homecare* / aksesoris kendaraan (misal: 5% dari harga jual).
+  * **Insentif Penjualan Produk (Retail Up-selling):** Bonus penjualan produk *homecare* / aksesoris kendaraan (misal: 5%–10% dari harga jual).
   * **Komisi Tim / Pool:** Pembagian komisi merata untuk tim cuci mobil (*carwash bay crew*).
 * **FR-5.2 (Perhitungan Otomatis):** Perhitungan komisi dihitung seketika saat order servis berstatus lunas (*Paid*).
 * **FR-5.3 (Laporan & Integrasi Payroll):**
@@ -102,10 +103,13 @@ Sistem Odoo SSCM ini dirancang untuk:
 
 ---
 
-## 5. Roadmap Implementasi
+## 5. Live SaaS Implementation & Verification Status
 
-1. **Phase 1: Foundation & Alignment** (Dokumentasi PRD, README, dan Diagram ERD).
-2. **Phase 2: Master Data & Standard Configuration** (`stock`, `fleet`, `repair`, `appointment`, `point_of_sale`).
-3. **Phase 3: Custom Addon Development** (Modul Queue, Warranty Engine, & Commission Module).
-4. **Phase 4: Digital Payment & WhatsApp Notification Integration**.
-5. **Phase 5: Testing, Training, & Go-Live.**
+Sistem telah diuji dan diterapkan pada instance live **`https://bengkelhanin1.odoo.com`** (Odoo 20.0+e):
+
+| Komponen | Status Implementasi Live | Bukti Verifikasi |
+| :--- | :--- | :--- |
+| **Aplikasi Fondasi** | 7 Modul terpasang: `repair`, `fleet`, `stock`, `point_of_sale`, `account`, `hr`, `appointment`. | Terverifikasi via JSON-RPC query. |
+| **Custom Fields** | 17 Custom Fields berhasil dibuat pada model `fleet.vehicle`, `repair.order`, `res.partner`, dan `hr.employee`. | Field ID: 17822 s.d. 17857 terdaftar di `ir.model.fields`. |
+| **UI Views** | Inherited Form & Kanban Views terpasang di database. | View ID: 2124 (Repair Form), 2125 (Fleet Form), 2126 (Partner Form), 2127 (Employee Form), 2128 (Kanban). |
+| **Master Data Percontohan** | Data Pelanggan, Kendaraan, Staf, Fasilitas Salon, dan SPK Bengkel live. | SPK `WH/RO/00002` (Budi Santoso, Avanza B 1234 ABC, Pit 1, Mekanik Joko). |

@@ -352,3 +352,40 @@ class ServiceCommissionLine(models.Model):
    * Pemotongan bahan habis pakai berbasis BOM Kit (untuk salon).
    * Pembuatan record komisi di `service.commission.line` untuk teknisi/terapis terkait.
    * Notifikasi status selesai dikirimkan ke pelanggan via template WhatsApp/Email.
+
+---
+
+## 5. Implementasi Teknis pada Odoo SaaS / Studio (`bengkelhanin1.odoo.com`)
+
+Pada lingkungan SaaS, arsitektur di atas diimplementasikan melalui Studio Metadata API:
+
+### A. Daftar 17 Custom Fields (Tersimpan di `ir.model.fields`)
+1. **Model `fleet.vehicle` (ID: 3524):**
+   * `x_owner_id` (Many2one $\rightarrow$ `res.partner`, Field ID: 17822)
+   * `x_odometer_last` (Float, Field ID: 17824)
+2. **Model `repair.order` (ID: 4110):**
+   * `x_vehicle_id` (Many2one $\rightarrow$ `fleet.vehicle`, Field ID: 17826)
+   * `x_odometer_in` (Float, Field ID: 17828)
+   * `x_bay_allocation` (Selection, Field ID: 17830)
+   * `x_mechanic_id` (Many2one $\rightarrow$ `hr.employee`, Field ID: 17832)
+   * `x_washer_id` (Many2one $\rightarrow$ `hr.employee`, Field ID: 17834)
+   * `x_complaint` (Text, Field ID: 17836)
+   * `x_diagnosis` (Text, Field ID: 17838)
+   * `x_warranty_exp_date` (Date, Field ID: 17840)
+   * `x_warranty_exp_km` (Float, Field ID: 17842)
+3. **Model `res.partner` (ID: 91):**
+   * `x_skin_hair_type` (Char, Field ID: 17844)
+   * `x_known_allergies` (Text, Field ID: 17847)
+   * `x_formula_notes` (Text, Field ID: 17850)
+4. **Model `hr.employee` (ID: 2949):**
+   * `x_service_role` (Selection, Field ID: 17853)
+   * `x_commission_service_rate` (Float, Field ID: 17855)
+   * `x_commission_product_rate` (Float, Field ID: 17857)
+
+### B. Daftar Inherited Views (Tersimpan di `ir.ui.view`)
+* `repair.order.form.inherit.sscm` (View ID: 2124, Inherit ID: 1803)
+* `fleet.vehicle.form.inherit.sscm` (View ID: 2125, Inherit ID: 758)
+* `res.partner.form.inherit.salon` (View ID: 2126, Inherit ID: 127)
+* `hr.employee.form.inherit.sscm` (View ID: 2127, Inherit ID: 674)
+* `repair.order.kanban.inherit.sscm` (View ID: 2128, Inherit ID: 1804)
+

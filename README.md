@@ -1,10 +1,12 @@
 # Odoo Service Supply Chain Management (SSCM)
 
-Repositori ini memuat rancangan arsitektur, panduan alur operasional, dan spesifikasi implementasi **Service Supply Chain Management (SSCM)** berbasis ERP Odoo untuk dua jenis bisnis jasa:
+Repositori ini memuat rancangan arsitektur, panduan alur operasional, spesifikasi kebutuhan, dan implementasi **Service Supply Chain Management (SSCM)** berbasis ERP Odoo untuk dua jenis bisnis jasa:
 1. **Bengkel & Carwash (Automotive Workshop & Detailing)**
 2. **Salon, Barbershop, & Klinik Kecantikan (Beauty & Wellness Clinic)**
 
-> Dokumen spesifikasi kebutuhan lengkap dapat dilihat di [PRD.md](file:///c:/Users/ZYREX/Documents/odoo-SSCM/PRD.md).
+> * Dokumen spesifikasi kebutuhan produk: [PRD.md](file:///c:/Users/ZYREX/Documents/odoo-SSCM/PRD.md)
+> * Dokumen arsitektur teknis & ERD: [ARCHITECTURE.md](file:///c:/Users/ZYREX/Documents/odoo-SSCM/ARCHITECTURE.md)
+> * Status Implementasi Live: **Aktif & Teruji di Odoo SaaS (`https://bengkelhanin1.odoo.com`)**
 
 ---
 
@@ -28,8 +30,6 @@ Pada bisnis layanan, produk yang dijual adalah **pelayanan**, bukan barang jadi.
 ---
 
 ## 2. Alur Operasional Langkah demi Langkah (User Journey)
-
-Berikut adalah komparasi alur operasional di lapangan untuk kedua kasus bisnis:
 
 ```
 [Tahap 1: Inisiasi] ──> [Tahap 2: Alokasi Kapasitas] ──> [Tahap 3: Eksekusi & Konsumsi] ──> [Tahap 4: QC & Finalisasi] ──> [Tahap 5: Kasir & Pembayaran]
@@ -79,40 +79,48 @@ Berikut adalah komparasi alur operasional di lapangan untuk kedua kasus bisnis:
 
 ---
 
-## 3. Fitur Tambahan: Garansi Servis & Sistem Komisi Karyawan
+## 3. Fitur Utama: Garansi Servis & Komisi Karyawan
 
 ### A. Garansi Servis & Penanganan Klaim (Service Warranty)
-
-```
-[Order Servis Selesai] ──> [Masa Garansi Aktif] ──> [Keluhan Pelanggan] ──> [Validasi Masa Garansi] ──> [Warranty Claim Order (Rp 0)]
-```
-
 * **Pada Bengkel:**
   * **Garansi Jasa:** Otomatis berlaku 14 hari atau 1.000 KM setelah pengerjaan.
   * **Garansi Suku Cadang:** Khusus part bernomor seri (misal: Aki garansi 12 bulan dengan *Serial Number Tracking*).
-  * **Alur Klaim:** Jika ada masalah dalam masa garansi, Front Desk membuat **Warranty Claim Order** yang tertaut ke SPK asli. Biaya jasa kepada pelanggan digratiskan (**Rp 0**), sedangkan suku cadang cacat pabrik diretur ke vendor (*Vendor Return & Credit Note*).
+  * **Alur Klaim:** Diterbitkan **Warranty Claim Order** tertaut ke SPK asli. Biaya jasa kepada pelanggan digratiskan (**Rp 0**), sedangkan suku cadang cacat pabrik diretur ke vendor (*Vendor Return & Credit Note*).
 * **Pada Salon & Klinik:**
   * **Garansi Revisi / Retouch:** Garansi 3–7 hari untuk pewarnaan rambut yang tidak merata atau perbaikan *nail art*.
   * **Alur Klaim:** Dibuatkan sesi *touch-up* gratis dengan penugasan ke terapis terkait untuk menjaga kepuasan pelanggan, tercatat sebagai biaya jaminan mutu internal.
 
-### B. Sistem Komisi & Insentif Karyawan (Employee Commission Engine)
-
-```
-[Invoice / POS Paid] ──> [Trigger Commission Rule] ──> [Hitung % Jasa / Produk] ──> [Log Komisi Karyawan] ──> [Integrasi Payroll (Slip Gaji)]
-```
-
-* **Struktur Komisi Fleksibel:**
-  1. **Komisi Jasa Servis:** Persentase (%) dari nilai jasa yang dikerjakan oleh teknisi/terapis (misal: Mekanik mendapat 15% dari nilai jasa servis mesin; Terapis mendapat 15% dari nilai *treatment*).
-  2. **Insentif Up-Selling Produk (Retail):** Bonus penjualan produk *homecare* salon atau cairan perawatan kendaraan (misal: 5% dari harga jual produk retail).
-  3. **Komisi Tim / Pool (Carwash Bay):** Insentif berbasis kelompok yang dibagi rata per unit kendaraan yang dicuci pada hari tersebut.
-* **Otomatisasi:**
-  * Komisi dihitung otomatis saat status tagihan menjadi **Paid**.
-  * Transparansi: Setiap teknisi/terapis dapat melihat rekapitulasi poin/komisi harian mereka.
-  * Rekapitulasi bulanan diintegrasikan langsung ke slip gaji karyawan (`hr.payslip`).
+### B. Sistem Komisi & Insentif Karyawan (Commission Engine)
+* **Struktur Komisi:**
+  1. **Komisi Jasa Servis:** Persentase (%) dari nilai jasa (misal: Mekanik 15% dari jasa servis; Terapis 15%–20% dari nilai *treatment*).
+  2. **Insentif Up-Selling Produk (Retail):** Bonus penjualan produk *homecare* salon atau aksesoris mobil (misal: 5%–10% dari harga jual produk retail).
+  3. **Komisi Tim / Pool (Carwash Bay):** Insentif berbasis kelompok yang dibagi rata per unit kendaraan yang dicuci.
+* **Otomatisasi:** Terhitung otomatis saat tagihan berstatus **Paid** dan terhubung ke slip gaji (`hr.payslip`).
 
 ---
 
-## 4. Matriks Pemetaan Kebutuhan vs Modul Odoo
+## 4. Dua Pendekatan Implementasi (Dual Implementation Delivery)
+
+Proyek ini menyediakan dua mode implementasi:
+
+### Pendekatan 1: Live SaaS & Studio API Deployment (Aktif di `bengkelhanin1.odoo.com`)
+* **Host:** `https://bengkelhanin1.odoo.com` (Odoo 20.0+e)
+* **Metode:** Integrasi JSON-RPC & Studio Metadata API (`ir.model.fields`, `ir.ui.view`).
+* **Status:**
+  * 7 Modul Fondasi Terpasang: `repair`, `fleet`, `stock`, `point_of_sale`, `account`, `hr`, `appointment`.
+  * 17 Custom Fields Diterapkan pada `fleet.vehicle`, `repair.order`, `res.partner`, dan `hr.employee`.
+  * Tampilan Antrean Kanban Visual & Form Inherited telah aktif.
+  * Data master percontohan aktif (Budi Santoso, Toyota Avanza B 1234 ABC, SPK `WH/RO/00002` di Pit 1, Citra Lestari, Siti Rahmawati, Joko Susanto).
+
+### Pendekatan 2: Standalone Codebase Addons (Tersedia di Direktori `addons/`)
+Untuk deployment pada **Odoo.sh** atau **On-Premise**, paket modul Python mandiri telah tersedia:
+* **`addons/sscm_core`:** Fondasi buku besar komisi staf (`service.commission.line`) dan aturan keamanan grup.
+* **`addons/sscm_workshop`:** Manajemen antrean bay bengkel, SPK servis, kendaraan pelanggan, dan klaim garansi.
+* **`addons/sscm_salon`:** Dual-resource booking kursi & terapis dengan pencegahan bentrok jadwal, kartu perawatan pelanggan, dan retouch.
+
+---
+
+## 5. Matriks Pemetaan Kebutuhan vs Modul Odoo
 
 | Komponen Bisnis | Kasus 1: Bengkel & Carwash | Kasus 2: Salon & Klinik Kecantikan | Modul Utama Odoo |
 | :--- | :--- | :--- | :--- |
