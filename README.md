@@ -1,109 +1,126 @@
 # Odoo Service Supply Chain Management (SSCM)
 
-Repositori ini memuat panduan arsitektur, konsep pembelajaran, dan rancangan implementasi **Service Supply Chain Management (SSCM)** berbasis ERP Odoo untuk bisnis jasa.
+Repositori ini memuat rancangan arsitektur, panduan alur operasional, dan spesifikasi implementasi **Service Supply Chain Management (SSCM)** berbasis ERP Odoo untuk dua jenis bisnis jasa:
+1. **Bengkel & Carwash (Automotive Workshop & Detailing)**
+2. **Salon, Barbershop, & Klinik Kecantikan (Beauty & Wellness Clinic)**
+
+> Dokumen spesifikasi kebutuhan lengkap dapat dilihat di [PRD.md](file:///c:/Users/ZYREX/Documents/odoo-SSCM/PRD.md).
 
 ---
 
-## 1. Pengertian: Dari SCM Klasik ke Service SCM (SSCM)
+## 1. Pengertian: SCM Tradisional vs Service SCM (SSCM)
 
 ### SCM Tradisional (Barang Fisik)
-Pada rantai pasok manufaktur dan ritel konvensional, fokus utama adalah pengelolaan arus barang fisik:
+Pada rantai pasok konvensional, arus utama adalah pergerakan barang fisik:
 $$\text{Supplier} \longrightarrow \text{Bahan Baku} \longrightarrow \text{Pabrik / Manufaktur} \longrightarrow \text{Gudang / Distribusi} \longrightarrow \text{Pelanggan}$$
-Tujuannya adalah memastikan ketersediaan barang jadi pada kuantitas, lokasi, dan waktu yang tepat dengan biaya serendah mungkin.
+Tujuannya adalah memastikan ketersediaan barang jadi pada kuantitas dan waktu yang tepat dengan biaya logistik serendah mungkin.
 
-### Service Supply Chain Management / SSCM (Bisnis Jasa)
-Pada bisnis berbasis layanan (seperti bengkel, salon, klinik estetika, carwash), produk yang dijual adalah **pelayanan/jasa**, bukan barang jadi. Karakteristik pembeda utamanya adalah:
-
-1. **Perishability (Kapasitas Layanan Tidak Bisa Digudangkan):**
-   Kapasitas waktu terapis atau pit bengkel yang menganggur selama 2 jam tidak dapat disimpan sebagai stok untuk dijual keesokan harinya. Kapasitas waktu yang tidak terpakai akan hilang selamanya.
-2. **Simultaneity (Produksi dan Konsumsi Bersamaan):**
+### Service SCM / SSCM (Bisnis Jasa)
+Pada bisnis layanan, produk yang dijual adalah **pelayanan**, bukan barang jadi. Karakteristik pembedanya:
+1. **Perishability (Kapasitas Waktu Bersifat Hangus):**
+   Kapasitas kursi salon atau pit bengkel yang menganggur selama 2 jam tidak dapat disimpan di gudang untuk dijual besok.
+2. **Simultaneity (Produksi dan Konsumsi Terjadi Bersamaan):**
    Layanan diproduksi dan dikonsumsi secara *real-time* di hadapan pelanggan.
 3. **Dual Supply Chain (Rantai Pasok Ganda):**
-   * **Rantai Kapasitas (Capacity Chain):** Manajemen waktu ketersediaan tenaga ahli (mekanik, dokter, terapis) dan fasilitas kerja (kursi potong, bed facial, lift/pit servis).
-   * **Rantai Material Pendukung (Consumables Chain):** Manajemen bahan habis pakai dan suku cadang (oli, busi, shampoo mobil, serum wajah, krim pewarna rambut).
-
-Di Odoo, tujuan implementasi SSCM adalah **menyatukan ketersediaan kapasitas sumber daya fisik & manusia dengan logistik bahan habis pakai secara real-time dan terintegrasi ke sistem pencatatan keuangan**.
+   * **Rantai Kapasitas (Capacity Chain):** Manajemen waktu ketersediaan tenaga ahli (mekanik, terapis, dokter) dan fasilitas fisik (kursi, bed, pit/bay lift).
+   * **Rantai Material Pendukung (Consumables Chain):** Manajemen bahan habis pakai dan suku cadang (oli, busi, sampo mobil, serum wajah, krim pewarna rambut).
 
 ---
 
-## 2. Pemetaan Kasus Bisnis & Modul Odoo
+## 2. Alur Operasional Langkah demi Langkah (User Journey)
 
-### Kasus 1: Bengkel & Carwash
+Berikut adalah komparasi alur operasional di lapangan untuk kedua kasus bisnis:
 
-#### A. Antrean Servis yang Jelas (*Work Order & Bay Allocation*)
-* **Tantangan:** Kendaraan pelanggan datang, dicatat keluhannya, dialokasikan ke area kerja (*Pit / Lift / Bay*) yang kosong, dipantau status pengerjaannya oleh mekanik, dan ditampilkan ke monitor antrean ruang tunggu.
-* **Modul Odoo yang Ditawarkan:**
-  * **`repair` (Repair Orders):** Modul bawaan Odoo untuk membuat Surat Perintah Kerja (SPK) perbaikan, merinci jasa servis dan suku cadang yang digunakan.
-  * **`mrp` (Manufacturing & Work Centers):** Mendefinisikan *Bay / Pit / Lift Servis* sebagai work center untuk memonitor utilisasi kapasitas bengkel.
-  * **Custom Addon (`workshop_queue`):** Tampilan **Kanban Board** antrean bengkel:
-    $$\text{Booking / Datang} \longrightarrow \text{Pemeriksaan / Diagnosa} \longrightarrow \text{Pengerjaan Servis} \longrightarrow \text{QC / Cuci} \longrightarrow \text{Selesai \& Siap Bayar}$$
+```
+[Tahap 1: Inisiasi] ──> [Tahap 2: Alokasi Kapasitas] ──> [Tahap 3: Eksekusi & Konsumsi] ──> [Tahap 4: QC & Finalisasi] ──> [Tahap 5: Kasir & Pembayaran]
+```
 
-#### B. Catatan Kendaraan Pelanggan (*Customer Vehicle Asset*)
-* **Tantangan:** Setiap kendaraan memerlukan catatan rekam jejak: nomor polisi, nomor rangka (VIN), odometer terakhir (KM), riwayat penggantian part, dan jadwal servis berkala.
-* **Modul Odoo yang Ditawarkan:**
-  * **`fleet` (Fleet Management):** Dimodifikasi (*inherit*) agar bukan hanya mencatat kendaraan armada perusahaan, melainkan dihubungkan ke data pelanggan (`res.partner`).
-  * **`contacts` (`res.partner`):** Sebagai pusat data profil pemilik kendaraan, nomor kontak/WhatsApp, dan histori transaksi servis.
+### Tahap 1: Inisiasi & Check-In Pelanggan (Front Desk)
+* **Bengkel & Carwash:**
+  * Pelanggan datang *walk-in* atau reservasi. Service Advisor (SA) mencari/input nomor polisi di modul `fleet.vehicle` yang terhubung ke data pelanggan (`res.partner`).
+  * Input Odometer (KM) saat masuk dan catatan keluhan/permintaan servis.
+  * Menghasilkan **Surat Perintah Kerja (SPK) / Draft Repair Order**.
+* **Salon & Klinik Kecantikan:**
+  * Pelanggan datang *walk-in* atau reservasi via `appointment`.
+  * Resepsionis membuka profil pelanggan (`res.partner`) dan mengecek tab **Treatment History**: memeriksa formula pewarna rambut sebelumnya, catatan alergi kulit, atau resep dokter.
+  * Menghasilkan **Service Order / Appointment Ticket**.
 
-#### C. Pembayaran Digital Langsung Tercatat
-* **Tantangan:** Setelah kendaraan selesai dikerjakan, kasir langsung menerbitkan tagihan digital tanpa input manual ulang, menerima pembayaran QRIS, dan otomatis menandai lunas.
-* **Modul Odoo yang Ditawarkan:**
-  * **`point_of_sale` (POS) / `account` (Invoicing):** Mengonversi Work Order servis menjadi transaksi kasir dalam 1 klik.
-  * **`payment` (Payment Provider Integration):** Integrasi QRIS Dinamis atau Payment Gateway (Midtrans, Xendit, DOKU). Webhook otomatis mengubah status invoice menjadi **Paid** dan membentuk jurnal penerimaan kas/bank secara otomatis tanpa rekonsiliasi manual.
+### Tahap 2: Alokasi Kapasitas Antrean (Resource Scheduling)
+* **Bengkel & Carwash:**
+  * SPK dialokasikan ke **Bay / Pit / Lift Servis** yang kosong (misal: Pit 2 Servis Ringan) dan menugaskan Mekanik penanggung jawab.
+  * Tampil di **Kanban Board Antrean** di ruang bengkel (*Shop Floor Display*).
+* **Salon & Klinik Kecantikan:**
+  * Modul `appointment` / `planning` mengunci jam reservasi.
+  * Sistem memvalidasi ketersediaan ganda: Kursi/Bed terkunci dan Terapis/Dokter terkunci. Validasi backend mencegah *double-booking* secara otomatis.
 
-#### D. Sisi SCM Pendukung (Suku Cadang & Bahan)
-* **`stock` (Inventory Management):** Mengelola stok fisik oli, kampas rem, filter udara, dan sampo cuci mobil.
-* **`purchase` (Procurement):** *Automated Reordering Rules* (Min-Max Rule). Jika stok oli mencapai batas minimum, Odoo otomatis membuat draf *Request for Quotation* (RFQ) ke supplier.
+### Tahap 3: Eksekusi Layanan & Konsumsi Material (The Core SCM)
+* **Bengkel & Carwash:**
+  * Mekanik mengubah status menjadi `Sedang Dikerjakan`.
+  * Kebutuhan suku cadang (oli, filter, kampas rem) dimasukkan ke baris order servis. Odoo memeriksa ketersediaan stok gudang secara *real-time* dan mencadangkan (*reserved*) barang tersebut.
+* **Salon & Klinik Kecantikan:**
+  * Terapis membawa pelanggan ke kursi/bed dan memulai perawatan.
+  * Layanan yang memiliki **BOM tipe Kit** (misal: Facial Acne membutuhkan 1 ampul serum, 20g masker, spuit steril) otomatis mencatat bahan habis pakai yang terpakai di gudang kabinet salon.
 
----
+### Tahap 4: Quality Control, Serah Terima, & Rekam Historis
+* **Bengkel & Carwash:**
+  * Foreman / QC memeriksa hasil kerja; kendaraan diarahkan ke Bay Cuci (Carwash) untuk *finishing*.
+  * Odometer terbaru tersimpan permanen di `fleet.vehicle`, riwayat suku cadang tercatat, dan Odoo mengkalkulasi estimasi servis berkala berikutnya (misal: 6 bulan / 10.000 KM ke depan).
+* **Salon & Klinik Kecantikan:**
+  * Hasil perawatan diperlihatkan ke pelanggan; staf mendokumentasikan foto *After* (pada klinik estetika).
+  * Catatan formula baru atau reaksi kulit dicatat pada riwayat perawatan pelanggan untuk referensi kunjungan berikutnya.
 
-### Kasus 2: Salon, Barbershop, & Klinik Kecantikan
-
-#### A. Booking per Kursi dan per Terapis (*Dual-Resource Scheduling*)
-* **Tantangan:** Mencegah *double-booking*. Satu layanan memerlukan 2 sumber daya sekaligus: staf terapis/stylist dan aset fisik (kursi potong, bed facial, atau alat laser).
-* **Modul Odoo yang Ditawarkan:**
-  * **`appointment`:** Memfasilitasi reservasi online mandiri oleh pelanggan maupun reservasi langsung oleh admin kasir.
-  * **`resource` & `planning`:** Mengatur jadwal kerja staf (`hr.employee`) dan ketersediaan aset (`appointment.resource`).
-  * **Custom Constraint Validation:** Menerapkan validasi backend (Python ORM `@api.constrains`) untuk memastikan tidak ada jadwal bentrok pada staf maupun kursi di rentang waktu yang sama.
-
-#### B. Riwayat Perawatan Pelanggan (*Customer Treatment History / E-Medical Card*)
-* **Tantangan:** Mencatat preferensi pelanggan, catatan resep formula pewarna rambut, riwayat alergi, kondisi kulit sebelum/sesudah, dan foto dokumentasi *before-after*.
-* **Modul Odoo yang Ditawarkan:**
-  * **`contacts` (Extended):** Tab kustom pada formulir pelanggan yang merangkum seluruh rekam jejak perawatan.
-  * **Custom Model (`salon.treatment.record`):** Entitas khusus pencatatan hasil treatment yang otomatis terhubung ke faktur/POS order yang bersangkutan.
-
-#### C. Analisa Layanan Paling Laris (*Business Intelligence & Analytics*)
-* **Tantangan:** Mengidentifikasi layanan mana yang paling menghasilkan pendapatan, tren musim liburan, dan performa produktivitas per terapis.
-* **Modul Odoo yang Ditawarkan:**
-  * **`point_of_sale` (Reporting):** Laporan penjualan harian per kategori layanan dan per kasir/cabang.
-  * **`sale` (Sales Analysis BI - Pivot & Graph):**
-    * **Pivot Table View:** Matriks silang (Baris = Nama Layanan, Kolom = Bulan/Tahun, Nilai = Jumlah Kunjungan & Omzet).
-    * **Graph View:** Grafik batang dan diagram lingkaran untuk visualisasi Top 5 Service terlaris.
-
-#### D. Sisi SCM Pendukung (Bahan Habis Pakai / Consumables)
-* **`mrp` (BoM Kit - Bill of Materials):**
-  Layanan seperti *Hair Coloring* atau *Facial Treatment* tidak mengurangi stok jasa, melainkan menghabiskan bahan (tube cat rambut, developer, krim masker, serum). Dengan fitur **BOM tipe Kit**, setiap transaksi layanan otomatis memotong stok bahan baku di gudang secara proporsional.
+### Tahap 5: Kasir, Pembayaran Digital, & Otomatisasi Akuntansi
+* **Bengkel & Carwash:**
+  * Kasir memanggil No. Polisi / SPK di modul POS / Invoicing. Seluruh biaya jasa, suku cadang, dan cuci terangkum otomatis.
+  * Pelanggan memindai **QRIS Dinamis** di layar kasir. Begitu terbayar, webhook otomatis mengubah status menjadi **Paid**, stok suku cadang tervalidasi keluar gudang, dan jurnal pendapatan + HPP terbentuk tanpa rekonsiliasi manual.
+* **Salon & Klinik Kecantikan:**
+  * Kasir memanggil nama pelanggan di Odoo POS. Paket treatment dan produk *skincare homecare* tambahan langsung tampil.
+  * Pelanggan membayar via QRIS/EDC. Stok bahan terpotong otomatis dari sistem, dan komisi terapis langsung terkalkulasi.
 
 ---
 
-## 3. Matriks Pemetaan Kebutuhan vs Modul Odoo
+## 3. Fitur Tambahan: Garansi Servis & Sistem Komisi Karyawan
+
+### A. Garansi Servis & Penanganan Klaim (Service Warranty)
+
+```
+[Order Servis Selesai] ──> [Masa Garansi Aktif] ──> [Keluhan Pelanggan] ──> [Validasi Masa Garansi] ──> [Warranty Claim Order (Rp 0)]
+```
+
+* **Pada Bengkel:**
+  * **Garansi Jasa:** Otomatis berlaku 14 hari atau 1.000 KM setelah pengerjaan.
+  * **Garansi Suku Cadang:** Khusus part bernomor seri (misal: Aki garansi 12 bulan dengan *Serial Number Tracking*).
+  * **Alur Klaim:** Jika ada masalah dalam masa garansi, Front Desk membuat **Warranty Claim Order** yang tertaut ke SPK asli. Biaya jasa kepada pelanggan digratiskan (**Rp 0**), sedangkan suku cadang cacat pabrik diretur ke vendor (*Vendor Return & Credit Note*).
+* **Pada Salon & Klinik:**
+  * **Garansi Revisi / Retouch:** Garansi 3–7 hari untuk pewarnaan rambut yang tidak merata atau perbaikan *nail art*.
+  * **Alur Klaim:** Dibuatkan sesi *touch-up* gratis dengan penugasan ke terapis terkait untuk menjaga kepuasan pelanggan, tercatat sebagai biaya jaminan mutu internal.
+
+### B. Sistem Komisi & Insentif Karyawan (Employee Commission Engine)
+
+```
+[Invoice / POS Paid] ──> [Trigger Commission Rule] ──> [Hitung % Jasa / Produk] ──> [Log Komisi Karyawan] ──> [Integrasi Payroll (Slip Gaji)]
+```
+
+* **Struktur Komisi Fleksibel:**
+  1. **Komisi Jasa Servis:** Persentase (%) dari nilai jasa yang dikerjakan oleh teknisi/terapis (misal: Mekanik mendapat 15% dari nilai jasa servis mesin; Terapis mendapat 15% dari nilai *treatment*).
+  2. **Insentif Up-Selling Produk (Retail):** Bonus penjualan produk *homecare* salon atau cairan perawatan kendaraan (misal: 5% dari harga jual produk retail).
+  3. **Komisi Tim / Pool (Carwash Bay):** Insentif berbasis kelompok yang dibagi rata per unit kendaraan yang dicuci pada hari tersebut.
+* **Otomatisasi:**
+  * Komisi dihitung otomatis saat status tagihan menjadi **Paid**.
+  * Transparansi: Setiap teknisi/terapis dapat melihat rekapitulasi poin/komisi harian mereka.
+  * Rekapitulasi bulanan diintegrasikan langsung ke slip gaji karyawan (`hr.payslip`).
+
+---
+
+## 4. Matriks Pemetaan Kebutuhan vs Modul Odoo
 
 | Komponen Bisnis | Kasus 1: Bengkel & Carwash | Kasus 2: Salon & Klinik Kecantikan | Modul Utama Odoo |
 | :--- | :--- | :--- | :--- |
-| **Kapasitas / Jadwal** | Antrean Pit/Bay berbasis status | Jadwal Jam, Kursi, & Terapis | `repair`, `appointment`, `planning` |
+| **Kapasitas / Antrean** | Antrean Pit/Bay berbasis status | Jadwal Jam, Kursi, & Terapis | `repair`, `mrp`, `appointment`, `planning` |
 | **Aset / Objek Layanan** | Kendaraan (Plat No, KM, Mesin) | Kartu Perawatan Pelanggan (Kulit/Rambut) | `fleet`, `contacts` (extended) |
 | **Material SCM** | Suku Cadang, Aki, Oli Mesin | Krim Facial, Pewarna, Serum | `stock`, `mrp` (BoM Kit) |
+| **Garansi Servis** | Garansi 14 Hari / 1.000 KM & Part Serial | Garansi Retouch Warna / Nail Art 7 Hari | Custom `service_warranty` / `repair` |
+| **Komisi Staf** | Komisi Jasa Mekanik + Insentif Cuci | Komisi Treatment + Bonus Skincare | Custom `commission_engine` + `hr_payroll` |
 | **Transaksi Kasir** | Cetak SPK & Invoice Servis | POS Retail + Jasa Kasir Cepat | `point_of_sale`, `account` |
 | **Pembayaran** | Digital QRIS / Payment Gateway | QRIS, EDC, Transfer, Cash | `payment` (integrasi gateway) |
 | **Analisa Bisnis** | Utilisasi Pit & Penjualan Part | Layanan Terlaris & Produktivitas Terapis | `sale.report`, `pos.order` pivot |
-
----
-
-## 4. Rencana Tahapan Pengembangan (Development Roadmap)
-
-1. **Review & Penyelarasan Konsep:** Menyetujui arsitektur modul dan alur operasional.
-2. **Setup Modul Standar Odoo:** Instalasi dan konfigurasi basis modul (`stock`, `point_of_sale`, `fleet`, `repair`, `appointment`).
-3. **Pengembangan Custom Addon (jika diperlukan):**
-   * Modul kustom `workshop_management` untuk antrean bay bengkel & rekam servis kendaraan.
-   * Modul kustom `salon_management` untuk dual-resource scheduling & customer treatment card.
-4. **Integrasi Pembayaran Digital:** Konfigurasi provider QRIS/Payment Gateway.
-5. **Testing & User Acceptance Testing (UAT).**
