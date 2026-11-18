@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_salon_treatment_history_tree" model="ir.ui.view">
+        <field name="name">salon.treatment.history.tree</field>
+        <field name="model">salon.treatment.history</field>
+        <field name="arch" type="xml">
+            <tree string="Kartu Rekam Perawatan Pelanggan" sample="1">
+                <field name="treatment_date"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="therapist_id"/>
+                <field name="formula_notes"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_salon_treatment_history_form" model="ir.ui.view">
+        <field name="name">salon.treatment.history.form</field>
+        <field name="model">salon.treatment.history</field>
+        <field name="arch" type="xml">
+            <form string="Kartu Perawatan Estetika">
+                <sheet>
+                    <group>
+                        <group string="Informasi Kunjungan">
+                            <field name="partner_id"/>
+                            <field name="treatment_date"/>
+                            <field name="appointment_id"/>
+                        </group>
+                        <group string="Layanan &amp; Terapis">
+                            <field name="service_id"/>
+                            <field name="therapist_id"/>
+                        </group>
+                    </group>
+                    <group string="Catatan Kondisi &amp; Formula">
+                        <field name="skin_hair_condition" placeholder="Kondisi awal kulit/rambut saat datang..."/>
+                        <field name="formula_notes" placeholder="Resep racikan pewarna atau formula serum yang digunakan..."/>
+                    </group>
+                    <group string="Dokumentasi Visual">
+                        <group string="Foto Sebelum">
+                            <field name="photo_before" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Foto Sesudah">
+                            <field name="photo_after" widget="image" class="oe_avatar"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_salon_treatment_history" model="ir.actions.act_window">
+        <field name="name">Kartu Perawatan Pelanggan</field>
+        <field name="res_model">salon.treatment.history</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

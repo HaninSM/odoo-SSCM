@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- CALENDAR VIEW -->
+    <record id="view_salon_appointment_calendar" model="ir.ui.view">
+        <field name="name">salon.appointment.calendar</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <calendar string="Jadwal Booking Salon"
+                      date_start="start_time"
+                      date_stop="end_time"
+                      color="therapist_id"
+                      mode="week"
+                      event_open_popup="true">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="chair_id"/>
+                <field name="therapist_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- KANBAN VIEW -->
+    <record id="view_salon_appointment_kanban" model="ir.ui.view">
+        <field name="name">salon.appointment.kanban</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" records_draggable="true" sample="1">
+                <field name="state"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="therapist_id"/>
+                <field name="chair_id"/>
+                <field name="service_id"/>
+                <field name="start_time"/>
+                <field name="price_unit"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click p-3 shadow-sm rounded border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="fs-6 text-primary"><field name="name"/></strong>
+                                <span class="badge bg-info text-dark"><field name="chair_id"/></span>
+                            </div>
+                            <div class="fw-bold fs-5 text-dark"><field name="service_id"/></div>
+                            <div class="text-muted"><i class="fa fa-user me-1"/> <field name="partner_id"/></div>
+                            <div class="text-muted small mt-1"><i class="fa fa-clock-o me-1"/> <field name="start_time"/></div>
+                            <div class="text-muted small"><i class="fa fa-magic me-1"/> Terapis: <field name="therapist_id"/></div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="fw-bold text-success"><field name="price_unit" widget="monetary"/></span>
+                                <field name="activity_ids" widget="kanban_activity"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- TREE VIEW -->
+    <record id="view_salon_appointment_tree" model="ir.ui.view">
+        <field name="name">salon.appointment.tree</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Booking Salon" sample="1">
+                <field name="name"/>
+                <field name="start_time"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="therapist_id"/>
+                <field name="chair_id"/>
+                <field name="price_unit" sum="Total Omzet"/>
+                <field name="state" widget="badge"
+                       decoration-info="state in ['draft', 'confirmed']"
+                       decoration-warning="state == 'in_service'"
+                       decoration-success="state == 'done'"
+                       decoration-muted="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="view_salon_appointment_form" model="ir.ui.view">
+        <field name="name">salon.appointment.form</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <form string="Sesi Booking &amp; Treatment">
+                <header>
+                    <button name="action_confirm" string="Konfirmasi Booking" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_start_service" string="Mulai Perawatan" type="object" class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_done" string="Selesai Perawatan" type="object" class="btn-success" invisible="state != 'in_service'"/>
+                    <button name="action_cancel" string="Batalkan" type="object" invisible="state in ['done', 'cancel']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_service,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nomor Booking"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Pelanggan &amp; Layanan">
+                            <field name="partner_id"/>
+                            <field name="service_id"/>
+                            <field name="price_unit"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Dual-Resource Allocation (Kapasitas)">
+                            <field name="therapist_id"/>
+                            <field name="chair_id"/>
+                            <field name="start_time"/>
+                            <field name="duration_minutes"/>
+                            <field name="end_time"/>
+                            <field name="treatment_history_id" invisible="not treatment_history_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Konsultasi &amp; Resep Formula" name="formula">
+                            <field name="treatment_notes" placeholder="Catatan formula campuran pewarna, takaran serum, reaksi alergi kulit..."/>
+                        </page>
+                        <page string="Foto Dokumentasi (Before-After)" name="photos">
+                            <group>
+                                <group string="Kondisi Sebelum (Before)">
+                                    <field name="photo_before" widget="image" class="oe_avatar"/>
+                                </group>
+                                <group string="Kondisi Sesudah (After)">
+                                    <field name="photo_after" widget="image" class="oe_avatar"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Garansi Retouch" name="warranty" invisible="state != 'done'">
+                            <field name="warranty_claim_ids" readonly="1">
+                                <tree string="Klaim Retouch">
+                                    <field name="name"/>
+                                    <field name="claim_date"/>
+                                    <field name="complaint_type"/>
+                                    <field name="is_free_charge" widget="boolean"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- PIVOT VIEW (Analisa Layanan Paling Laris) -->
+    <record id="view_salon_appointment_pivot" model="ir.ui.view">
+        <field name="name">salon.appointment.pivot</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <pivot string="Analisa Layanan Salon Terlaris" sample="1">
+                <field name="service_id" type="row"/>
+                <field name="start_time" interval="month" type="col"/>
+                <field name="price_unit" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- GRAPH VIEW -->
+    <record id="view_salon_appointment_graph" model="ir.ui.view">
+        <field name="name">salon.appointment.graph</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <graph string="Grafik Layanan Salon Terlaris" type="bar">
+                <field name="service_id"/>
+                <field name="price_unit" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_salon_appointment" model="ir.actions.act_window">
+        <field name="name">Booking &amp; Perawatan Salon</field>
+        <field name="res_model">salon.appointment</field>
+        <field name="view_mode">calendar,kanban,tree,form,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Buat booking perawatan salon atau klinik kecantikan baru.
+            </p>
+        </field>
+    </record>
+</odoo>

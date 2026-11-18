@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_workshop_bay_user,workshop.bay.user,model_workshop_bay,sscm_workshop.group_workshop_user,1,0,0,0
+access_workshop_bay_manager,workshop.bay.manager,model_workshop_bay,sscm_workshop.group_workshop_manager,1,1,1,1
+access_workshop_service_order_user,workshop.service.order.user,model_workshop_service_order,sscm_workshop.group_workshop_user,1,1,0,0
+access_workshop_service_order_manager,workshop.service.order.manager,model_workshop_service_order,sscm_workshop.group_workshop_manager,1,1,1,1
+access_workshop_service_line_user,workshop.service.line.user,model_workshop_service_line,sscm_workshop.group_workshop_user,1,1,1,1
+access_workshop_service_line_manager,workshop.service.line.manager,model_workshop_service_line,sscm_workshop.group_workshop_manager,1,1,1,1
+access_workshop_parts_line_user,workshop.parts.line.user,model_workshop_parts_line,sscm_workshop.group_workshop_user,1,1,1,1
+access_workshop_parts_line_manager,workshop.parts.line.manager,model_workshop_parts_line,sscm_workshop.group_workshop_manager,1,1,1,1
+access_workshop_warranty_claim_user,workshop.warranty.claim.user,model_workshop_warranty_claim,sscm_workshop.group_workshop_user,1,1,0,0
+access_workshop_warranty_claim_manager,workshop.warranty.claim.manager,model_workshop_warranty_claim,sscm_workshop.group_workshop_manager,1,1,1,1

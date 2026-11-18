@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_workshop_warranty_claim_tree" model="ir.ui.view">
+        <field name="name">workshop.warranty.claim.tree</field>
+        <field name="model">workshop.warranty.claim</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Klaim Garansi" sample="1">
+                <field name="name"/>
+                <field name="claim_date"/>
+                <field name="original_order_id"/>
+                <field name="vehicle_id"/>
+                <field name="partner_id"/>
+                <field name="odometer_claim"/>
+                <field name="is_warranty_valid" widget="boolean"/>
+                <field name="action_taken"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'investigation'" decoration-success="state in ['approved', 'done']" decoration-danger="state == 'rejected'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_workshop_warranty_claim_form" model="ir.ui.view">
+        <field name="name">workshop.warranty.claim.form</field>
+        <field name="model">workshop.warranty.claim</field>
+        <field name="arch" type="xml">
+            <form string="Formulir Klaim Garansi Servis">
+                <header>
+                    <button name="action_investigate" string="Mulai Investigasi" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Setujui Klaim" type="object" class="btn-success" invisible="state != 'investigation'"/>
+                    <button name="action_done" string="Tandai Selesai" type="object" class="btn-info" invisible="state != 'approved'"/>
+                    <button name="action_reject" string="Tolak Klaim" type="object" class="btn-danger" invisible="state in ['done', 'rejected']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,investigation,approved,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nomor Klaim Garansi"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Referensi SPK Asli">
+                            <field name="original_order_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="partner_id"/>
+                            <field name="claim_date"/>
+                            <field name="odometer_claim"/>
+                        </group>
+                        <group string="Validasi Sistem Garansi">
+                            <field name="is_within_time_warranty" widget="boolean"/>
+                            <field name="is_within_km_warranty" widget="boolean"/>
+                            <field name="is_warranty_valid" widget="boolean" class="fw-bold"/>
+                            <field name="action_taken"/>
+                        </group>
+                    </group>
+                    <group string="Keluhan Pelanggan">
+                        <field name="claim_reason" placeholder="Keluhan lanjutan setelah perbaikan..."/>
+                    </group>
+                    <group string="Hasil Investigasi Teknisi">
+                        <field name="investigation_notes" placeholder="Catatan analisa kepala mekanik/foreman..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_workshop_warranty_claim" model="ir.actions.act_window">
+        <field name="name">Klaim Garansi Servis</field>
+        <field name="res_model">workshop.warranty.claim</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada pengajuan klaim garansi.
+            </p>
+        </field>
+    </record>
+</odoo>

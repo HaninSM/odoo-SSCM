@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_salon_warranty_claim_tree" model="ir.ui.view">
+        <field name="name">salon.warranty.claim.tree</field>
+        <field name="model">salon.warranty.claim</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Klaim Retouch &amp; Revisi" sample="1">
+                <field name="name"/>
+                <field name="claim_date"/>
+                <field name="appointment_id"/>
+                <field name="partner_id"/>
+                <field name="therapist_id"/>
+                <field name="complaint_type"/>
+                <field name="is_free_charge" widget="boolean"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'scheduled'" decoration-success="state == 'done'" decoration-danger="state == 'rejected'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_salon_warranty_claim_form" model="ir.ui.view">
+        <field name="name">salon.warranty.claim.form</field>
+        <field name="model">salon.warranty.claim</field>
+        <field name="arch" type="xml">
+            <form string="Formulir Klaim Retouch / Revisi">
+                <header>
+                    <button name="action_schedule" string="Jadwalkan Retouch" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" string="Tandai Selesai Revisi" type="object" class="btn-success" invisible="state != 'scheduled'"/>
+                    <button name="action_reject" string="Tolak Pengajuan" type="object" class="btn-danger" invisible="state in ['done', 'rejected']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nomor Klaim Retouch"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Referensi Booking Asli">
+                            <field name="appointment_id"/>
+                            <field name="partner_id"/>
+                            <field name="therapist_id"/>
+                            <field name="claim_date"/>
+                        </group>
+                        <group string="Ketentuan Garansi">
+                            <field name="complaint_type"/>
+                            <field name="is_free_charge" widget="boolean"/>
+                        </group>
+                    </group>
+                    <group string="Tindakan Koreksi / Revisi">
+                        <field name="action_notes" placeholder="Catatan tindakan perbaikan yang dilakukan..."/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_salon_warranty_claim" model="ir.actions.act_window">
+        <field name="name">Klaim Garansi Retouch</field>
+        <field name="res_model">salon.warranty.claim</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

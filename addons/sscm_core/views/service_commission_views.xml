@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_service_commission_line_tree" model="ir.ui.view">
+        <field name="name">service.commission.line.tree</field>
+        <field name="model">service.commission.line</field>
+        <field name="arch" type="xml">
+            <tree string="Buku Komisi Karyawan" sample="1">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="source_reference"/>
+                <field name="commission_type"/>
+                <field name="base_amount" sum="Total DPP"/>
+                <field name="percentage"/>
+                <field name="amount" sum="Total Komisi"/>
+                <field name="state" widget="badge" decoration-info="state == 'accrued'" decoration-success="state == 'paid_in_payroll'" decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_service_commission_line_form" model="ir.ui.view">
+        <field name="name">service.commission.line.form</field>
+        <field name="model">service.commission.line</field>
+        <field name="arch" type="xml">
+            <form string="Catatan Komisi Karyawan">
+                <header>
+                    <button name="action_mark_paid_payroll" string="Cairkan di Payroll" type="object" class="oe_highlight" invisible="state != 'accrued'"/>
+                    <button name="action_cancel" string="Batalkan" type="object" invisible="state != 'accrued'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="accrued,paid_in_payroll"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Informasi Transaksi">
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="source_reference"/>
+                            <field name="commission_type"/>
+                        </group>
+                        <group string="Perhitungan Nilai">
+                            <field name="base_amount"/>
+                            <field name="percentage"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Catatan" name="notes">
+                            <field name="notes" placeholder="Catatan transaksi atau rincian pembagian..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_service_commission_line_pivot" model="ir.ui.view">
+        <field name="name">service.commission.line.pivot</field>
+        <field name="model">service.commission.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Analisa Komisi Karyawan">
+                <field name="employee_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_service_commission_line" model="ir.actions.act_window">
+        <field name="name">Komisi &amp; Insentif Karyawan</field>
+        <field name="res_model">service.commission.line</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada komisi tercatat.
+            </p>
+        </field>
+    </record>
+</odoo>

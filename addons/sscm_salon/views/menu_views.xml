@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_salon_root"
+              name="Salon &amp; Klinik"
+              parent="sscm_core.menu_sscm_root"
+              sequence="20"/>
+
+    <menuitem id="menu_salon_appointments"
+              name="Booking &amp; Jadwal"
+              parent="menu_salon_root"
+              action="action_salon_appointment"
+              sequence="10"/>
+
+    <menuitem id="menu_salon_treatment_history"
+              name="Kartu Perawatan Pelanggan"
+              parent="menu_salon_root"
+              action="action_salon_treatment_history"
+              sequence="20"/>
+
+    <menuitem id="menu_salon_warranty"
+              name="Klaim Retouch"
+              parent="menu_salon_root"
+              action="action_salon_warranty_claim"
+              sequence="30"/>
+
+    <menuitem id="menu_salon_configuration"
+              name="Konfigurasi Salon"
+              parent="menu_salon_root"
+              sequence="90"/>
+
+    <menuitem id="menu_salon_chairs"
+              name="Fasilitas Kursi &amp; Bed"
+              parent="menu_salon_configuration"
+              action="action_salon_chair"
+              sequence="10"/>
+</odoo>

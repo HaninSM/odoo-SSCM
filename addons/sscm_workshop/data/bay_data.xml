@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="bay_pit_1" model="workshop.bay">
+            <field name="name">Pit 1 - Servis Ringan &amp; Ganti Oli</field>
+            <field name="sequence">1</field>
+            <field name="bay_type">general_repair</field>
+            <field name="state">available</field>
+        </record>
+        <record id="bay_pit_2" model="workshop.bay">
+            <field name="name">Pit 2 - Servis Umum &amp; Rem</field>
+            <field name="sequence">2</field>
+            <field name="bay_type">general_repair</field>
+            <field name="state">available</field>
+        </record>
+        <record id="bay_pit_3" model="workshop.bay">
+            <field name="name">Pit 3 - Servis Berat &amp; Turun Mesin</field>
+            <field name="sequence">3</field>
+            <field name="bay_type">heavy_repair</field>
+            <field name="state">available</field>
+        </record>
+        <record id="bay_pit_4" model="workshop.bay">
+            <field name="name">Pit 4 - Spooring &amp; Balancing</field>
+            <field name="sequence">4</field>
+            <field name="bay_type">spooring</field>
+            <field name="state">available</field>
+        </record>
+        <record id="bay_carwash_1" model="workshop.bay">
+            <field name="name">Bay Cuci 1 - Hidrolik</field>
+            <field name="sequence">5</field>
+            <field name="bay_type">carwash</field>
+            <field name="state">available</field>
+        </record>
+    </data>
+</odoo>

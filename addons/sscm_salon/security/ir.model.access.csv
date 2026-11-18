@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_salon_chair_user,salon.chair.user,model_salon_chair,sscm_salon.group_salon_user,1,0,0,0
+access_salon_chair_manager,salon.chair.manager,model_salon_chair,sscm_salon.group_salon_manager,1,1,1,1
+access_salon_appointment_user,salon.appointment.user,model_salon_appointment,sscm_salon.group_salon_user,1,1,1,0
+access_salon_appointment_manager,salon.appointment.manager,model_salon_appointment,sscm_salon.group_salon_manager,1,1,1,1
+access_salon_treatment_history_user,salon.treatment.history.user,model_salon_treatment_history,sscm_salon.group_salon_user,1,1,1,0
+access_salon_treatment_history_manager,salon.treatment.history.manager,model_salon_treatment_history,sscm_salon.group_salon_manager,1,1,1,1
+access_salon_warranty_claim_user,salon.warranty.claim.user,model_salon_warranty_claim,sscm_salon.group_salon_user,1,1,1,0
+access_salon_warranty_claim_manager,salon.warranty.claim.manager,model_salon_warranty_claim,sscm_salon.group_salon_manager,1,1,1,1

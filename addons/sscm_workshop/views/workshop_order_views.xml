@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- KANBAN VIEW (Visual Service Queue) -->
+    <record id="view_workshop_service_order_kanban" model="ir.ui.view">
+        <field name="name">workshop.service.order.kanban</field>
+        <field name="model">workshop.service.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" records_draggable="true" sample="1">
+                <field name="state"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="bay_id"/>
+                <field name="mechanic_id"/>
+                <field name="amount_total"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click p-3 shadow-sm rounded border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="fs-6 text-primary"><field name="name"/></strong>
+                                <span class="badge bg-secondary"><field name="bay_id"/></span>
+                            </div>
+                            <div class="fw-bold fs-5 text-dark"><field name="vehicle_id"/></div>
+                            <div class="text-muted"><i class="fa fa-user me-1"/> <field name="partner_id"/></div>
+                            <div class="mt-2 text-muted small"><i class="fa fa-wrench me-1"/> Mekanik: <field name="mechanic_id"/></div>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="fw-bold text-success"><field name="amount_total" widget="monetary"/></span>
+                                <field name="activity_ids" widget="kanban_activity"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- TREE VIEW -->
+    <record id="view_workshop_service_order_tree" model="ir.ui.view">
+        <field name="name">workshop.service.order.tree</field>
+        <field name="model">workshop.service.order</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar SPK Bengkel" sample="1">
+                <field name="name"/>
+                <field name="date_entry"/>
+                <field name="partner_id"/>
+                <field name="vehicle_id"/>
+                <field name="bay_id"/>
+                <field name="mechanic_id"/>
+                <field name="odometer_in"/>
+                <field name="amount_total" sum="Total Tagihan"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state in ['draft', 'queue']" 
+                       decoration-warning="state in ['in_progress', 'qc', 'carwash']" 
+                       decoration-success="state in ['done', 'invoiced']" 
+                       decoration-muted="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="view_workshop_service_order_form" model="ir.ui.view">
+        <field name="name">workshop.service.order.form</field>
+        <field name="model">workshop.service.order</field>
+        <field name="arch" type="xml">
+            <form string="SPK Bengkel &amp; Carwash">
+                <header>
+                    <button name="action_to_queue" string="Masukkan Antrean" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_start_service" string="Mulai Pengerjaan" type="object" class="btn-primary" invisible="state != 'queue'"/>
+                    <button name="action_to_qc" string="Kirim ke QC" type="object" class="btn-warning" invisible="state != 'in_progress'"/>
+                    <button name="action_to_carwash" string="Kirim ke Cuci" type="object" class="btn-info" invisible="state != 'qc'"/>
+                    <button name="action_done" string="Selesai &amp; Serahkan" type="object" class="btn-success" invisible="state not in ['qc', 'carwash']"/>
+                    <button name="action_create_invoice" string="Terbitkan Faktur Kasir" type="object" class="oe_highlight" invisible="state != 'done' or invoice_id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,queue,in_progress,qc,carwash,done,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nomor SPK"/>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Informasi Pelanggan &amp; Kendaraan">
+                            <field name="partner_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="odometer_in"/>
+                            <field name="date_entry"/>
+                        </group>
+                        <group string="Alokasi Kapasitas &amp; Staf">
+                            <field name="bay_id"/>
+                            <field name="mechanic_id"/>
+                            <field name="washer_id"/>
+                            <field name="date_done" invisible="not date_done"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                        </group>
+                    </group>
+                    <group string="Keluhan &amp; Diagnosa">
+                        <field name="complaint" placeholder="Keluhan yang dirasakan pelanggan..."/>
+                        <field name="diagnosis" placeholder="Hasil pemeriksaan awal mekanik..."/>
+                    </group>
+                    <notebook>
+                        <page string="Jasa Servis" name="services">
+                            <field name="service_line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="qty"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_services" widget="monetary"/>
+                            </group>
+                        </page>
+                        <page string="Suku Cadang &amp; Oli" name="parts">
+                            <field name="parts_line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="qty"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_parts" widget="monetary"/>
+                                <field name="amount_total" class="oe_subtotal_footer_separator" widget="monetary"/>
+                            </group>
+                        </page>
+                        <page string="Informasi Garansi" name="warranty" invisible="state not in ['done', 'invoiced']">
+                            <group>
+                                <group>
+                                    <field name="warranty_expiration_date"/>
+                                    <field name="warranty_expiration_km"/>
+                                </group>
+                            </group>
+                            <field name="warranty_claim_ids" readonly="1">
+                                <tree string="Klaim Garansi">
+                                    <field name="name"/>
+                                    <field name="claim_date"/>
+                                    <field name="odometer_claim"/>
+                                    <field name="is_warranty_valid" widget="boolean"/>
+                                    <field name="action_taken"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- PIVOT VIEW -->
+    <record id="view_workshop_service_order_pivot" model="ir.ui.view">
+        <field name="name">workshop.service.order.pivot</field>
+        <field name="model">workshop.service.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Analisa Servis Bengkel">
+                <field name="bay_id" type="row"/>
+                <field name="date_entry" interval="month" type="col"/>
+                <field name="amount_total" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_workshop_service_order" model="ir.actions.act_window">
+        <field name="name">Antrean &amp; SPK Bengkel</field>
+        <field name="res_model">workshop.service.order</field>
+        <field name="view_mode">kanban,tree,form,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Buat Surat Perintah Kerja (SPK) baru untuk memulai antrean servis.
+            </p>
+        </field>
+    </record>
+</odoo>

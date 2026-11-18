@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="chair_hair_1" model="salon.chair">
+            <field name="name">Kursi Styling &amp; Potong 01</field>
+            <field name="sequence">1</field>
+            <field name="resource_type">hair_chair</field>
+            <field name="active">True</field>
+        </record>
+        <record id="chair_hair_2" model="salon.chair">
+            <field name="name">Kursi Styling &amp; Potong 02</field>
+            <field name="sequence">2</field>
+            <field name="resource_type">hair_chair</field>
+            <field name="active">True</field>
+        </record>
+        <record id="chair_facial_1" model="salon.chair">
+            <field name="name">Bed Facial Estetika Room A</field>
+            <field name="sequence">3</field>
+            <field name="resource_type">facial_bed</field>
+            <field name="active">True</field>
+        </record>
+        <record id="chair_nail_1" model="salon.chair">
+            <field name="name">Station Nail Art &amp; Manicure 01</field>
+            <field name="sequence">4</field>
+            <field name="resource_type">nail_station</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

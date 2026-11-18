@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_salon" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.salon</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="action_open_treatment_history" icon="fa-magic">
+                    <field string="Perawatan" name="salon_visit_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Profil Estetika &amp; Salon" name="salon_profile">
+                    <group>
+                        <group string="Karakteristik Fisik">
+                            <field name="skin_hair_type" placeholder="Tipe kulit / rambut"/>
+                        </group>
+                        <group string="Peringatan Medis / Alergi">
+                            <field name="known_allergies" placeholder="Catatan alergi kimiawi..."/>
+                        </group>
+                    </group>
+                    <field name="treatment_history_ids" readonly="1">
+                        <tree string="Kartu Rekam Perawatan">
+                            <field name="treatment_date"/>
+                            <field name="service_id"/>
+                            <field name="therapist_id"/>
+                            <field name="formula_notes"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

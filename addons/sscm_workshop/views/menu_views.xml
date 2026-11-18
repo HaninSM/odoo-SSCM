@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_workshop_root"
+              name="Bengkel &amp; Carwash"
+              parent="sscm_core.menu_sscm_root"
+              sequence="10"/>
+
+    <menuitem id="menu_workshop_orders"
+              name="Antrean &amp; SPK"
+              parent="menu_workshop_root"
+              action="action_workshop_service_order"
+              sequence="10"/>
+
+    <menuitem id="menu_workshop_warranty"
+              name="Klaim Garansi"
+              parent="menu_workshop_root"
+              action="action_workshop_warranty_claim"
+              sequence="20"/>
+
+    <menuitem id="menu_workshop_vehicles"
+              name="Kendaraan Pelanggan"
+              parent="menu_workshop_root"
+              action="action_fleet_vehicle_workshop"
+              sequence="30"/>
+
+    <menuitem id="menu_workshop_configuration"
+              name="Konfigurasi Bengkel"
+              parent="menu_workshop_root"
+              sequence="90"/>
+
+    <menuitem id="menu_workshop_bays"
+              name="Fasilitas Pit &amp; Bay"
+              parent="menu_workshop_configuration"
+              action="action_workshop_bay"
+              sequence="10"/>
+</odoo>

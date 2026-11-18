@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_workshop_bay_tree" model="ir.ui.view">
+        <field name="name">workshop.bay.tree</field>
+        <field name="model">workshop.bay</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Pit / Bay Bengkel" sample="1">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="bay_type"/>
+                <field name="state" widget="badge" decoration-success="state == 'available'" decoration-warning="state == 'occupied'" decoration-danger="state == 'maintenance'"/>
+                <field name="current_order_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_workshop_bay_form" model="ir.ui.view">
+        <field name="name">workshop.bay.form</field>
+        <field name="model">workshop.bay</field>
+        <field name="arch" type="xml">
+            <form string="Fasilitas Pit / Bay">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nama Bay / Pit (contoh: Pit 1)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="bay_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="badge" decoration-success="state == 'available'" decoration-warning="state == 'occupied'"/>
+                            <field name="current_order_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Spesifikasi &amp; Catatan" name="notes">
+                            <field name="notes" placeholder="Kapasitas tonase lift, spesifikasi kompresor..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_workshop_bay" model="ir.actions.act_window">
+        <field name="name">Fasilitas Pit &amp; Bay</field>
+        <field name="res_model">workshop.bay</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

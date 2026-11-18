@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="module_category_sscm_workshop" model="ir.module.category">
+            <field name="name">Bengkel &amp; Carwash</field>
+            <field name="description">Akses Manajemen Bengkel, Bay, dan Garansi</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <record id="group_workshop_user" model="res.groups">
+            <field name="name">Teknisi / Mekanik</field>
+            <field name="category_id" ref="module_category_sscm_workshop"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_workshop_manager" model="res.groups">
+            <field name="name">Service Advisor / Kepala Bengkel</field>
+            <field name="category_id" ref="module_category_sscm_workshop"/>
+            <field name="implied_ids" eval="[(4, ref('group_workshop_user')), (4, ref('sscm_core.group_sscm_manager'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

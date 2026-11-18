@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_sscm_root"
+              name="Service SCM"
+              sequence="25"
+              web_icon="sscm_core,static/description/icon.png"/>
+
+    <menuitem id="menu_sscm_commission_root"
+              name="Komisi &amp; SDM"
+              parent="menu_sscm_root"
+              sequence="50"/>
+
+    <menuitem id="menu_sscm_commission_lines"
+              name="Buku Besar Komisi"
+              parent="menu_sscm_commission_root"
+              action="action_service_commission_line"
+              sequence="10"/>
+</odoo>

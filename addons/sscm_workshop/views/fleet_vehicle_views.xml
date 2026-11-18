@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_fleet_vehicle_form_inherit_sscm" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form.inherit.sscm</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button" type="object" name="action_open_service_orders" icon="fa-wrench">
+                        <field string="Servis" name="service_count" widget="statinfo"/>
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='driver_id']" position="before">
+                <field name="owner_id"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Riwayat Servis Bengkel" name="workshop_history">
+                    <field name="service_order_ids" readonly="1">
+                        <tree string="Riwayat SPK">
+                            <field name="name"/>
+                            <field name="date_entry"/>
+                            <field name="bay_id"/>
+                            <field name="mechanic_id"/>
+                            <field name="odometer_in"/>
+                            <field name="amount_total"/>
+                            <field name="state" widget="badge"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_fleet_vehicle_workshop" model="ir.actions.act_window">
+        <field name="name">Kendaraan Pelanggan</field>
+        <field name="res_model">fleet.vehicle</field>
+        <field name="view_mode">tree,form,kanban</field>
+    </record>
+</odoo>

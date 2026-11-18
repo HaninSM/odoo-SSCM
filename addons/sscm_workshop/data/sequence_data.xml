@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_workshop_service_order" model="ir.sequence">
+            <field name="name">SPK Bengkel Sequence</field>
+            <field name="code">workshop.service.order</field>
+            <field name="prefix">SPK/%(year)s/%(month)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_workshop_warranty_claim" model="ir.sequence">
+            <field name="name">Klaim Garansi Bengkel Sequence</field>
+            <field name="code">workshop.warranty.claim</field>
+            <field name="prefix">WCLM/%(year)s/%(month)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

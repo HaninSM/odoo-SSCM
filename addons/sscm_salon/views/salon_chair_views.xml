@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_salon_chair_tree" model="ir.ui.view">
+        <field name="name">salon.chair.tree</field>
+        <field name="model">salon.chair</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Kursi &amp; Fasilitas Salon">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="resource_type"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_salon_chair_form" model="ir.ui.view">
+        <field name="name">salon.chair.form</field>
+        <field name="model">salon.chair</field>
+        <field name="arch" type="xml">
+            <form string="Fasilitas Kursi / Bed">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Nama Fasilitas (contoh: Bed Facial 01)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="resource_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Spesifikasi &amp; Catatan" name="notes">
+                            <field name="notes" placeholder="Catatan kebersihan, nomor colokan listrik, spesifikasi mesin facial..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_salon_chair" model="ir.actions.act_window">
+        <field name="name">Fasilitas Kursi &amp; Bed</field>
+        <field name="res_model">salon.chair</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

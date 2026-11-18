@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_sscm" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.sscm</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Service SCM &amp; Komisi" name="sscm_commission">
+                    <group>
+                        <group string="Pengaturan Layanan">
+                            <field name="service_role"/>
+                            <field name="commission_rate_service"/>
+                            <field name="commission_rate_product"/>
+                        </group>
+                        <group string="Ringkasan Komisi">
+                            <field name="total_accrued_commission" widget="monetary"/>
+                        </group>
+                    </group>
+                    <field name="commission_line_ids" readonly="1">
+                        <tree string="Buku Komisi">
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="source_reference"/>
+                            <field name="commission_type"/>
+                            <field name="base_amount"/>
+                            <field name="percentage"/>
+                            <field name="amount"/>
+                            <field name="state" widget="badge" decoration-info="state == 'accrued'" decoration-success="state == 'paid_in_payroll'"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="module_category_sscm" model="ir.module.category">
+            <field name="name">Service Supply Chain Management (SSCM)</field>
+            <field name="description">Pengelolaan Kapasitas Layanan, Fasilitas, dan Komisi</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="group_sscm_user" model="res.groups">
+            <field name="name">Staf Layanan (User)</field>
+            <field name="category_id" ref="module_category_sscm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_sscm_manager" model="res.groups">
+            <field name="name">Manager Layanan (Manager)</field>
+            <field name="category_id" ref="module_category_sscm"/>
+            <field name="implied_ids" eval="[(4, ref('group_sscm_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>
